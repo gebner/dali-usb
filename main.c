@@ -10,6 +10,7 @@ int main() {
   usbInit();
 
   while (1) {
+    usbPoll();
     dali_send_cmd2(254, 120);
     _delay_ms(300);
   }
