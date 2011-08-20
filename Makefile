@@ -15,7 +15,7 @@ all: dali-usb.elf dali-usb.hex
 	$(CC) -S $(CFLAGS) -c $<
 
 dali-usb.elf: $(CFILES) $(HEADERS)
-	$(CC) $(CFLAGS) -I vusb $(CFILES) -o $@
+	$(CC) $(CFLAGS) -I. -Ivusb $(CFILES) -o $@
 
 dali-usb.hex: dali-usb.elf
 	avr-objcopy -O ihex $< $@
