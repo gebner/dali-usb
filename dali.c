@@ -3,24 +3,30 @@
 #include <avr/io.h>
 #include <util/delay.h>
 
-#define _delay_te(te) _delay_us((te) * 416.67)
+__attribute__((always_inline))
+static inline void _delay_te(double te) {
+  _delay_us(te * 416.67);
+}
+
+static void dali_set_level(uint8_t l) {
+  if (l) {
+    DALI_OUT_PORT &= ~_BV(DALI_OUT_PIN);
+  } else {
+    DALI_OUT_PORT |= _BV(DALI_OUT_PIN);
+  }
+}
 
 void dali_init() {
   DALI_OUT_DDR |= _BV(DALI_OUT_PIN);
+
+  dali_set_level(1);
 }
 
 void dali_send_bit(uint8_t bit) {
-  if (!bit) {
-    DALI_OUT_PORT &= ~_BV(DALI_OUT_PIN);
-    _delay_te(1);
-    DALI_OUT_PORT |= _BV(DALI_OUT_PIN);
-    _delay_te(1);
-  } else {
-    DALI_OUT_PORT |= _BV(DALI_OUT_PIN);
-    _delay_te(1);
-    DALI_OUT_PORT &= ~_BV(DALI_OUT_PIN);
-    _delay_te(1);
-  }
+  dali_set_level(bit);
+  _delay_te(1);
+  dali_set_level(!bit);
+  _delay_te(1);
 }
 
 void dali_send_byte(uint8_t byte) {
