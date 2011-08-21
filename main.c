@@ -1,18 +1,20 @@
 #include "dali.h"
 #include <util/delay.h>
 #include "usbdrv.h"
+#include <avr/io.h>
 
 int main() {
   dali_init();
 
-  usbDeviceDisconnect();
-  _delay_ms(100);
   usbInit();
+  usbDeviceDisconnect();
+  _delay_ms(250);
+  usbDeviceConnect();
+
+  sei();
 
   while (1) {
     usbPoll();
-    dali_send_cmd2(254, 120);
-    _delay_ms(300);
   }
 }
 
