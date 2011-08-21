@@ -41,7 +41,7 @@ void dali_send_start() {
 }
 
 void dali_send_end() {
-  DALI_OUT_PORT |= _BV(DALI_OUT_PIN);
+  dali_set_level(1);
   _delay_te(4);
 }
 
