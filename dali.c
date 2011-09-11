@@ -23,9 +23,9 @@ void dali_init() {
 }
 
 void dali_send_bit(uint8_t bit) {
-  dali_set_level(bit);
-  _delay_te(1);
   dali_set_level(!bit);
+  _delay_te(1);
+  dali_set_level(bit);
   _delay_te(1);
 }
 
