@@ -37,7 +37,7 @@ void dali_send_byte(uint8_t byte) {
 }
 
 void dali_send_start() {
-  dali_send_bit(0);
+  dali_send_bit(1);
 }
 
 void dali_send_end() {
