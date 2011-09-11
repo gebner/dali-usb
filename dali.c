@@ -9,7 +9,7 @@ static inline void _delay_te(double te) {
 }
 
 static void dali_set_level(uint8_t l) {
-  if (l) {
+  if (DALI_OUT_INV ? l : !l) {
     DALI_OUT_PORT &= ~_BV(DALI_OUT_PIN);
   } else {
     DALI_OUT_PORT |= _BV(DALI_OUT_PIN);
