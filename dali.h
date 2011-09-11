@@ -5,5 +5,6 @@
 
 void dali_init();
 void dali_send_cmd2(uint8_t addr, uint8_t cmd);
+uint8_t dali_recv();
 
 #endif
