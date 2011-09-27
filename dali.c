@@ -1,13 +1,28 @@
 #include "dali.h"
 #include "config.h"
 #include <avr/io.h>
+#include <avr/interrupt.h>
 #include <util/delay.h>
 
+#define PRESCALE 256
+
 __attribute__((always_inline))
-static inline void _delay_te(double te) {
-  _delay_us(te * 416.67);
+static inline uint8_t te2cnt(double te) {
+  double sec = te * 416.67e-6;
+  double ticks = sec * F_CPU;
+  return (uint8_t) (ticks / PRESCALE + 0.5);
 }
 
+#define STATE_OFF       0
+#define STATE_BIT_PART1 1
+#define STATE_BIT_PART2 2
+#define STATE_STOPBITS  3
+
+static volatile uint8_t state = STATE_OFF;
+static volatile uint8_t current_bit;
+static volatile uint16_t data;
+
+__attribute__((always_inline))
 static void dali_set_level(uint8_t l) {
   if (DALI_OUT_INV ? l : !l) {
     DALI_OUT_PORT &= ~_BV(DALI_OUT_PIN);
@@ -16,42 +31,59 @@ static void dali_set_level(uint8_t l) {
   }
 }
 
+static void dali_toggle_level() {
+  DALI_OUT_PINR = _BV(DALI_OUT_PIN);
+}
+
 void dali_init() {
   DALI_OUT_DDR |= _BV(DALI_OUT_PIN);
 
   dali_set_level(1);
 
-  TCCR0B |= _BV(CS02); // 256 prescaler
-}
-
-void dali_send_bit(uint8_t bit) {
-  dali_set_level(!bit);
-  _delay_te(1);
-  dali_set_level(bit);
-  _delay_te(1);
-}
-
-void dali_send_byte(uint8_t byte) {
-  uint8_t i = 7;
-  do {
-    dali_send_bit((byte >> i) & 1);
-  } while (i--);
-}
-
-void dali_send_start() {
-  dali_send_bit(1);
-}
-
-void dali_send_end() {
-  dali_set_level(1);
-  _delay_te(4);
+  TCCR0B = _BV(CS02); // 256 prescaler
 }
 
 void dali_send_cmd2(uint8_t addr, uint8_t cmd) {
-  dali_send_start();
-  dali_send_byte(addr);
-  dali_send_byte(cmd);
-  dali_send_end();
+  if (state != STATE_OFF) return;
+
+  data = (addr << 8) | (cmd << 0);
+  current_bit = 16;
+
+  dali_set_level(0);
+
+  TCNT0 = 0;
+  OCR0A = te2cnt(1);
+  state = STATE_BIT_PART1;
+  TIFR |= _BV(OCF0A);
+  TIMSK |= _BV(OCIE0A);
+}
+
+ISR(TIM0_COMPA_vect) {
+  TCNT0 = 0;
+  switch (state) {
+    case STATE_BIT_PART2:
+      if (current_bit) {
+	current_bit--;
+	dali_set_level(!(data & _BV(current_bit)));
+
+	state = STATE_BIT_PART1;
+      } else {
+	dali_set_level(1);
+
+	OCR0A = te2cnt(4);
+	state = STATE_STOPBITS;
+      }
+      break;
+    case STATE_BIT_PART1:
+      dali_toggle_level();
+
+      state = STATE_BIT_PART2;
+      break;
+    case STATE_STOPBITS:
+      TIMSK &= ~_BV(OCIE0A);
+      state = STATE_OFF;
+      break;
+  }
 }
 
 #define dali_in_level_raw() (DALI_IN_PORT & _BV(DALI_IN_PIN))

@@ -20,9 +20,7 @@ usbMsgLen_t usbFunctionSetup(uchar setupData[8]) {
 
   switch (rq->bRequest) {
     case 2: {
-      cli();
       dali_send_cmd2(rq->wValue.bytes[0], rq->wValue.bytes[1]);
-      sei();
       break;
     }
   }
