@@ -12,7 +12,7 @@ HEADERS = $(wildcard *.h vusb/*.h)
 all: dali-usb.elf dali-usb.hex
 
 %.s: %.c
-	$(CC) -S $(CFLAGS) -c $<
+	$(CC) -S -fverbose-asm $(CFLAGS) -c $<
 
 dali-usb.elf: $(CFILES) $(HEADERS)
 	$(CC) $(CFLAGS) -I. -Ivusb $(CFILES) -o $@
