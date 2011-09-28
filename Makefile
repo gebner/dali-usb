@@ -3,7 +3,7 @@
 CC = avr-gcc
 CFLAGS += -Wall -mmcu=attiny45 -DF_CPU=16500000UL
 
-CFLAGS += -Os -Wl,--relax,--gc-sections \
+CFLAGS += -Os -Wl,--relax,--gc-sections --combine -fwhole-program \
 	-ffunction-sections -fdata-sections
 
 CFILES = $(wildcard *.c vusb/*.c vusb/*.S)

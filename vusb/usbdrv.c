@@ -21,15 +21,24 @@ documentation of the entire driver.
 /* ------------------------------------------------------------------------- */
 
 /* raw USB registers / interface to assembler code: */
+__attribute__((externally_visible))
 uchar usbRxBuf[2*USB_BUFSIZE];  /* raw RX buffer: PID, 8 bytes data, 2 bytes CRC */
+__attribute__((externally_visible))
 uchar       usbInputBufOffset;  /* offset in usbRxBuf used for low level receiving */
+__attribute__((externally_visible))
 uchar       usbDeviceAddr;      /* assigned during enumeration, defaults to 0 */
+__attribute__((externally_visible))
 uchar       usbNewDeviceAddr;   /* device ID which should be set after status phase */
 uchar       usbConfiguration;   /* currently selected configuration. Administered by driver, but not used */
+__attribute__((externally_visible))
 volatile schar usbRxLen;        /* = 0; number of bytes in usbRxBuf; 0 means free, -1 for flow control */
+__attribute__((externally_visible))
 uchar       usbCurrentTok;      /* last token received or endpoint number for last OUT token if != 0 */
+__attribute__((externally_visible))
 uchar       usbRxToken;         /* token for data we received; or endpont number for last OUT */
+__attribute__((externally_visible))
 volatile uchar usbTxLen = USBPID_NAK;   /* number of bytes to transmit with next IN token or handshake token */
+__attribute__((externally_visible))
 uchar       usbTxBuf[USB_BUFSIZE];/* data to transmit with next IN, free if usbTxLen contains handshake token */
 #if USB_COUNT_SOF
 volatile uchar  usbSofCount;    /* incremented by assembler module every SOF */
