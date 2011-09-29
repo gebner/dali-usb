@@ -1,4 +1,4 @@
-.PHONY: all clean
+.PHONY: all flash clean
 
 CC = avr-gcc
 CFLAGS += -Wall -mmcu=attiny45 -DF_CPU=16500000UL
@@ -19,6 +19,9 @@ dali-usb.elf: $(CFILES) $(HEADERS)
 
 dali-usb.hex: dali-usb.elf
 	avr-objcopy -O ihex $< $@
+
+flash: dali-usb.hex
+	avrdude -p t45 -c buspirate -P /dev/ttyUSB0 -V -U dali-usb.hex
 
 clean:
 	$(RM) dali-usb.elf dali-usb.hex *.s *.o
