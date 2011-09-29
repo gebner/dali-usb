@@ -9,6 +9,7 @@
 
 #define DALI_IN_INV   1
 #define DALI_IN_PORT  PORTB
+#define DALI_IN_PINR  PINB
 #define DALI_IN_DDR   DDRB
 #define DALI_IN_PIN   4
 
