@@ -1,4 +1,4 @@
-Firmware for a DALI-USB[1] adapter using an ATtiny45.
+Firmware for a DALI-USB[1] adapter using an Atmel AVR ATtiny45.
 
 Host utilities: https://github.com/gebner/dali-usb-host
 
