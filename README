@@ -6,5 +6,5 @@ TODO:
  - Repeat configuration commands.
  - Enforce settling time after backwards messages.
 
-[1] Digital addressable lighting interface.  (A communication protocol used for
-electric ballasts.)
+[1] Digital addressable lighting interface.  (A communication protocol
+used for electronic ballasts.)
